@@ -1,0 +1,24 @@
+.total-orders-container {
+  margin-top: 20px;
+}
+
+.total-orders-card {
+  background-color: #117b3188; /* Dull shade background */
+  margin-bottom: 20px;
+  border: none;
+}
+
+.total-orders-card .card-body {
+  text-align: center;
+}
+
+.total-orders-card .card-title {
+  font-size: 1.2rem;
+  color: #555; /* Text color */
+}
+
+.total-orders-card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0;
+}

@@ -1,0 +1,13 @@
+.nav-link {
+  color: lightgray;
+  text-decoration: none;
+}
+
+.nav-link.active {
+  color: yellow; /* Change to whatever color you prefer for the active link */
+  font-weight: bold; /* Optional: Make the active link bold */
+}
+
+.nav-link:hover {
+  color: white; /* Change to whatever color you prefer for hover state */
+}

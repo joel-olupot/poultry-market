@@ -1,0 +1,77 @@
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+}
+
+.item-image {
+  height: 208px; /* Set a fixed height for the product image */
+  width: 100%; /* Ensure the image fills the entire width of the card */
+  object-fit: cover; /* Maintain aspect ratio and cover the entire space */
+}
+
+.item-card {
+  transition: transform 0.2s;
+  margin-bottom: 10px; /* Adjust as needed for spacing between cards */
+  height: 400px; /* Set a fixed height for the card */
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover .card {
+  transform: scale(1.02);
+}
+
+@media (max-width: 576px) {
+  .item-image {
+    height: 150px; /* Adjust the height of the image for smaller screens */
+  }
+
+  .item-card {
+    margin-bottom: 5px; /* Reduce margin for smaller screens */
+    height: auto; /* Allow cards to adjust height based on content */
+  }
+
+  .category-card .row {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent line breaks */
+    padding-bottom: 10px; /* Add padding for better appearance */
+  }
+
+  .category-card .col {
+    display: inline-block; /* Make columns inline blocks for horizontal scrolling */
+    float: none; /* Disable float */
+    vertical-align: top; /* Align columns to the top */
+  }
+
+  .view-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .view-more a {
+    text-decoration: none;
+    font-size: 1.5em;
+    color: #000;
+    margin-left: 10px;
+  }
+}
+
+@media (min-width: 576px) {
+  .row {
+    margin-bottom: -10px; /* Adjust negative margin to compensate for card margins */
+  }
+
+  .col-lg-3,
+  .col-md-4,
+  .col-sm-6,
+  .col-12 {
+    padding: 0 5px; /* Adjust horizontal padding for better alignment */
+  }
+}
