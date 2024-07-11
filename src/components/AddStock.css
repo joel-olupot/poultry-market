@@ -1,0 +1,46 @@
+/* StockForm.css */
+
+.container {
+  margin-top: 50px;
+}
+
+h3 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.card {
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.custom-input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+}
+
+.custom-input:focus {
+  box-shadow: none;
+  border-bottom-color: #007bff;
+}
+
+.custom-input::placeholder {
+  color: #aaa;
+}
+
+.stock-submit-button,
+.stock-cancel-button {
+  width: 100%;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.stock-cancel-button {
+  margin-top: 10px;
+}

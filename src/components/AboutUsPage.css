@@ -1,0 +1,21 @@
+.container {
+  padding-top: 5rem;
+}
+
+h1,
+h2 {
+  margin-top: 1rem;
+}
+
+p.lead {
+  font-size: 1.25rem;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 2rem;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
+}

@@ -1,0 +1,44 @@
+/* LoginForm.css */
+
+.card {
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.custom-input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+  padding: 10px 5px;
+}
+
+.custom-input:focus {
+  box-shadow: none;
+  border-bottom-color: #007bff;
+}
+
+.custom-input::placeholder {
+  color: #aaa;
+}
+
+.login-button {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.register-link,
+.forgot-password-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register-link:hover,
+.forgot-password-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,22 @@
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+}
+
+.item-card {
+  width: 400px; /* Adjust the width as per your design */
+  margin: auto;
+}
+
+.item-image {
+  height: 300px; /* Set a fixed height for the image */
+  object-fit: cover; /* Ensure the image covers the entire area */
+}
+
+@media (max-width: 576px) {
+  .item-card {
+    width: 100%; /* Full width on smaller screens */
+  }
+}

@@ -1,0 +1,59 @@
+/* NavAndSidebar.css */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  display: flex;
+}
+
+.fixed-sidebar {
+  position: fixed;
+  top: 56px; /* Adjust this value based on the height of the navbar */
+  bottom: 0;
+  left: 0;
+  width: 16.666667%; /* This is 2/12 of the total width, adjust if needed */
+  overflow-y: auto;
+}
+
+.content-container {
+  margin-top: 56px; /* Adjust this value based on the height of the navbar */
+  margin-left: 16.666667%; /* Adjust if needed to match the sidebar width */
+  width: calc(
+    100% - 16.666667%
+  ); /* Adjust this value to fill the remaining width */
+  overflow-y: auto;
+  max-height: calc(
+    100vh - 56px
+  ); /* Adjust this value based on the height of the navbar */
+  padding: 1rem; /* Optional: Add some padding for content */
+}
+
+.sidebar-toggle-button {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  border: 2px solid #0d6efd; /* Bold blue outline (default Bootstrap blue) */
+  background-color: #0d6efd; /* Background color blue */
+  color: white; /* Text and icon color white */
+  padding: 0.2rem 0.4rem; /* Smaller size */
+  font-size: 0.8rem; /* Smaller font size */
+  z-index: 1001; /* Ensure it is above other elements */
+}
+
+.sidebar-toggle-button .toggle-icon {
+  color: white; /* Icon color white */
+}
+
+@media (max-width: 768px) {
+  .fixed-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .content-container {
+    margin-left: 0;
+    width: 100%;
+  }
+}
