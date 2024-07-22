@@ -11,12 +11,6 @@
   object-fit: cover; /* Maintain aspect ratio and cover the entire space */
 }
 
-.item-card {
-  transition: transform 0.2s;
-  margin-bottom: 10px; /* Adjust as needed for spacing between cards */
-  height: 400px; /* Set a fixed height for the card */
-}
-
 .card-link {
   text-decoration: none;
   color: inherit;
@@ -29,11 +23,6 @@
 @media (max-width: 576px) {
   .item-image {
     height: 150px; /* Adjust the height of the image for smaller screens */
-  }
-
-  .item-card {
-    margin-bottom: 5px; /* Reduce margin for smaller screens */
-    height: auto; /* Allow cards to adjust height based on content */
   }
 
   .category-card .row {

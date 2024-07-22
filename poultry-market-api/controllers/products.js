@@ -1,5 +1,7 @@
 const Product = require('../models/Product');
 const User = require('../models/User');
+const Order = require('../models/Order');
+const Cart = require('../models/Cart');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
 
@@ -61,57 +63,93 @@ const createProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
-  const {
-    body: { company, position },
-    user: { userId },
-    params: { id: productId },
-  } = req;
-  if (company === ' ' || position === ' ') {
-    throw new BadRequestError('Company or Position fields cannot be empty');
-  }
-  const product = await Product.findOneAndUpdate(
-    { _id: productId, createdBy: userId },
-    req.body,
-    { new: true, runValidators: true }
-  );
-  if (!product) {
-    throw new NotFoundError(`No product with id ${productId}`);
-  }
-  res.status(StatusCodes.OK).json({ product });
-};
-
 const deleteProduct = async (req, res) => {
-  const {
-    user: { userId },
-    params: { id: productId },
-  } = req;
-  const product = await Product.findOneAndRemove({
-    _id: productId,
-    createdBy: userId,
-  });
-  if (!product) {
-    throw new NotFoundError(`No product with id ${productId}`);
+  try {
+    const {
+      user: { userId },
+      params: { id: productId },
+    } = req;
+
+    const product = await Product.findOneAndRemove({
+      _id: productId,
+      createdBy: userId,
+    });
+
+    if (!product) {
+      throw new NotFoundError(`No product with id ${productId}`);
+    }
+
+    await Cart.findOneAndRemove({ productId });
+
+    const orders = await Order.find({});
+    await Promise.all(
+      orders.map(async (order) => {
+        order.items = order.items.filter(
+          (item) => !item.productId.equals(productId)
+        );
+
+        if (order.items.length === 0) {
+          await Order.findByIdAndRemove(order._id);
+        } else {
+          await order.save();
+        }
+      })
+    );
+
+    res.status(StatusCodes.OK).send();
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
-  res.status(StatusCodes.OK).send();
 };
 
 const deleteAllProducts = async (req, res) => {
-  const {
-    user: { userId },
-  } = req;
-  const product = await Product.deleteMany({
-    createdBy: userId,
-  });
+  try {
+    const {
+      user: { userId },
+    } = req;
 
-  res.status(StatusCodes.OK).send();
+    const products = await Product.find({ createdBy: userId });
+
+    await Promise.all(
+      products.map(async (product) => {
+        await Cart.findOneAndRemove({ productId: product._id });
+      })
+    );
+
+    const orders = await Order.find({});
+    await Promise.all(
+      orders.map(async (order) => {
+        order.items = order.items.filter(
+          (item) =>
+            !products.some((product) => product._id.equals(item.productId))
+        );
+
+        if (order.items.length === 0) {
+          await Order.findByIdAndRemove(order._id);
+        } else {
+          await order.save();
+        }
+      })
+    );
+
+    await Product.deleteMany({ createdBy: userId });
+
+    res.status(StatusCodes.OK).send();
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
 };
 
 module.exports = {
   getAllProducts,
   getProduct,
   createProduct,
-  updateProduct,
   deleteProduct,
   deleteAllProducts,
 };

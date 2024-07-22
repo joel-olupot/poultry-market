@@ -22,6 +22,7 @@ const orderRouter = require('./routes/order');
 const summaryRouter = require('./routes/summary');
 const salesRouter = require('./routes/sales');
 const statusRouter = require('./routes/status');
+const messageRouter = require('./routes/messages');
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
@@ -61,6 +62,7 @@ app.use('/api/v1/order', authenticateUser, orderRouter);
 app.use('/api/v1/orders/summary', authenticateUser, summaryRouter);
 app.use('/api/v1/orders/sales', authenticateUser, salesRouter);
 app.use('/api/v1/orders/status', authenticateUser, statusRouter);
+app.use('/api/v1/messages', authenticateUser, messageRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

@@ -1,12 +1,14 @@
 const express = require('express');
 const {
   makeOrder,
-  getAllOrders,
+  getOrders,
   updateOrder,
+  getOrderHistory,
 } = require('../controllers/order');
 const router = express.Router();
 
-router.route('/').post(makeOrder).get(getAllOrders);
+router.route('/').post(makeOrder).get(getOrders);
+router.route('/history').get(getOrderHistory);
 router.route('/:id').patch(updateOrder);
 
 module.exports = router;

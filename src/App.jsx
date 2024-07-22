@@ -8,9 +8,8 @@ import DetailsPage from './components/DetailsPage';
 import Register from './components/Register';
 import Login from './components/Login';
 import CategoriesPage from './components/CategoriesPage';
-import CartPage from './components/CartPage';
 import AboutUsPage from './components/AboutUsPage';
-import NavBar from './components/NavBar'; // Import NavBar
+import NavBar from './components/NavBar';
 import NavAndSidebar from './components/NavAndSidebar';
 import NavSidebar from './components/NavSidebar';
 
@@ -18,13 +17,12 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <NavBar /> {/* Add NavBar here */}
+        <NavBar />
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/cart" element={<CartPage />} />
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/details/:id" element={<DetailsPage />} />
           <Route

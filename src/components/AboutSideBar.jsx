@@ -26,9 +26,6 @@ const AboutSideBar = () => {
       <ListGroup.Item as={NavLink} to="/account/farmer/analytics">
         Analytics
       </ListGroup.Item>
-      <ListGroup.Item as={NavLink} to="/account/farmer/chat">
-        Chat
-      </ListGroup.Item>
       <ListGroup.Item as={NavLink} to="/account/farmer/add-stock">
         Add Stock
       </ListGroup.Item>

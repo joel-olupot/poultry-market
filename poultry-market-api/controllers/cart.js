@@ -1,25 +1,45 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
 
 const addToCart = async (req, res) => {
   try {
-    req.body.createdBy = req.user.userId;
+    const userId = req.user.userId;
+    req.body.createdBy = userId;
+
+    const existingCartItems = await Cart.find({ createdBy: userId });
+
+    if (existingCartItems.length > 0) {
+      const existingProductId = existingCartItems[0].productId;
+
+      const existingProduct = await Product.findById(existingProductId);
+      const existingFarmerId = existingProduct.createdBy.toString();
+
+      const product = await Product.findById(req.body.productId);
+      const farmerId = product.createdBy.toString();
+
+      if (farmerId !== existingFarmerId) {
+        return res.status(StatusCodes.OK).json({
+          status: 'unsuccessful',
+        });
+      }
+    }
 
     const productData = {
       ...req.body,
-      createdBy: req.body.createdBy,
+      createdBy: userId,
     };
 
-    const product = await Cart.create(productData);
-    res.status(StatusCodes.CREATED).json({ product });
+    const newProduct = await Cart.create(productData);
+    res.status(StatusCodes.CREATED).json({ product: newProduct });
   } catch (error) {
-    console.log(error.message);
     console.error(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
+
 const getCart = async (req, res) => {
   try {
     req.body.createdBy = req.user.userId;
@@ -31,12 +51,13 @@ const getCart = async (req, res) => {
     const detailedCartItems = await Promise.all(
       cartItems.map(async (item) => {
         const productDetails = await Product.findById(item.productId);
+        const farmer = await User.findById(productDetails.createdBy);
 
         return {
           ...item._doc,
           name: productDetails.name,
           description: productDetails.description,
-          farmName: productDetails.farmName,
+          farmName: farmer.farmName,
           images: productDetails.images,
         };
       })

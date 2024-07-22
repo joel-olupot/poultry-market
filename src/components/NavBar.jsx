@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Navbar,
   Nav,
@@ -34,16 +34,13 @@ const NavBar = () => {
               to={
                 userType === 'farmer'
                   ? '/account/farmer/analytics'
-                  : '/account/consumer/profile'
+                  : '/account/consumer/cart'
               }
               className={`nav-link text-light ${
                 location.pathname.startsWith('/account') ? 'active' : ''
               }`}
             >
               Account
-            </NavLink>
-            <NavLink to="/cart" className="nav-link text-light">
-              Cart
             </NavLink>
             <NavLink to="/about" className="nav-link text-light">
               About Us

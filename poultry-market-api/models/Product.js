@@ -77,11 +77,6 @@ const productSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    farmName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
   },
   {
     timestamps: true,

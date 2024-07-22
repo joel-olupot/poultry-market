@@ -1,8 +1,14 @@
-# React + Vite
+#Navigate to /poultry-market/poultry-market-api and create a file called .env then paste the following:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MONGO_URI=mongodb+srv://joel-olupot:Joel8Olupot@nodeexpressprojects.lcqxv4l.mongodb.net/ONLINE-POULTRY-MARKET?retryWrites=true&w=majority
+JWT_SECRET=jwtSecret
+JWT_LIFETIME=30d
 
-Currently, two official plugins are available:
+#To start the system navigate to /poultry-market on terminal and run:
+npm run dev
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#Then navigate to /poultry-market/poultry-market-api on another terminal maybe command prompt and run:
+npm start
+
+#For speed you can run the two commands above simultaneously on different terminals.
+#Once both are done loading navigate to http://localhost:5173/home and get started

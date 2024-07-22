@@ -7,11 +7,11 @@ import './Analytics.css';
 
 const Analytics = () => {
   return (
-    <Container fluid className="px-3 py-4">
+    <Container fluid className="px-3 mx-0 py-1">
       <h1 className="text-center mb-4">Analytics</h1>
       <Row className="mb-4">
         <Col>
-          <Card className="shadow-sm p-3">
+          <Card className="shadow-sm p-2">
             <TotalOrders />
           </Card>
         </Col>

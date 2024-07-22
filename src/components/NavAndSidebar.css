@@ -9,12 +9,35 @@ body {
 }
 
 .fixed-sidebar {
+  background-color: lightgray; /* Light gray background */
+  color: lightgray;
   position: fixed;
   top: 56px; /* Adjust this value based on the height of the navbar */
   bottom: 0;
   left: 0;
   width: 16.666667%; /* This is 2/12 of the total width, adjust if needed */
   overflow-y: auto;
+}
+
+.fixed-sidebar .list-group-item {
+  background-color: lightgray; /* Light gray background */
+  color: black; /* White text */
+}
+
+.fixed-sidebar .list-group-item:hover,
+.fixed-sidebar .list-group-item:focus,
+.fixed-sidebar .list-group-item:active {
+  background-color: rgba(
+    41,
+    91,
+    217,
+    0.963
+  ); /* Blue background on hover or click */
+  color: white; /* Ensure text stays white */
+}
+
+.fixed-sidebar .list-group-item.signout-item {
+  cursor: pointer; /* Make the cursor a pointer for the sign out item */
 }
 
 .content-container {

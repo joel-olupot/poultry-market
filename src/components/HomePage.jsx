@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import NavBar from './NavBar';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -11,7 +10,6 @@ const HomePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch items from the database
     const fetchItems = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/v1/items`);
@@ -45,6 +43,13 @@ const HomePage = () => {
     return `data:image/jpeg;base64,${window.btoa(binary)}`;
   };
 
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'UGX',
+    minimumFractionDigits: 0, // No decimal places
+    maximumFractionDigits: 0, // No decimal places
+  });
+
   if (loading) {
     return (
       <div className="spinner-container">
@@ -60,50 +65,48 @@ const HomePage = () => {
   }
 
   return (
-    <div>
-      <NavBar />
-      <Container className="mt-4">
-        <Row>
-          {items.map((item) => (
-            <Col
-              key={item._id}
-              lg={3}
-              md={4}
-              sm={6}
-              xs={12}
-              className="mb-4 d-flex justify-content-center"
+    <div className="container my-1">
+      <div className="row">
+        {items.map((item) => (
+          <div key={item._id} className="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <Link
+              to={{ pathname: `/details/${item._id}`, state: { item } }}
+              className="card-link w-100"
             >
-              <Link
-                to={{ pathname: `/details/${item._id}`, state: { item } }}
-                className="card-link w-100"
-              >
-                <Card className="item-card">
-                  <Card.Img
-                    variant="top"
-                    src={item.imageUrl}
-                    className="item-image"
-                    alt={item.name}
-                  />
-                  <Card.Body>
-                    <Card.Text>
-                      {item.name}
-                      <br />
-                      <strong>Farm:</strong> {item.farmName}
-                      <br />
-                      <strong>Quantity:</strong> {item.quantity.min}-
-                      {item.quantity.max}
-                      <br />
-                      <strong>Price:</strong> ${item.price.min}-$
-                      {item.price.max}
-                      <br />
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Link>
-            </Col>
-          ))}
-        </Row>
-      </Container>
+              <div className="card">
+                <img
+                  variant="top"
+                  src={item.imageUrl}
+                  className="item-image"
+                  alt={item.name}
+                />
+                <div className="card-body">
+                  <h5 className="card-text fs-5 text-primary">{item.name}</h5>
+                  <div className="card-text">
+                    Farm:
+                    <strong className="text-primary-emphasis">
+                      {item.farmName}
+                    </strong>
+                  </div>
+                  <div className="card-text">
+                    Quantity Range:{' '}
+                    <strong className="text-primary-emphasis">
+                      {item.quantity.min}-{item.quantity.max}
+                    </strong>
+                  </div>
+                  <div className="card-text">
+                    Unit Price:{' '}
+                    <strong className="text-primary-emphasis">
+                      {formatter.format(item.price.min / item.quantity.min)}
+                    </strong>
+                    <br />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

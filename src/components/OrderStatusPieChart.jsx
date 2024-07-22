@@ -25,6 +25,7 @@ const OrderStatusPieChart = () => {
             },
           }
         );
+        console.log(response.data);
         setStatusData(response.data.statusData);
       } catch (error) {
         console.error('Error fetching order status data:', error);
@@ -47,7 +48,7 @@ const OrderStatusPieChart = () => {
     datasets: [
       {
         data: [statusData.pending, statusData.completed, statusData.rejected],
-        backgroundColor: ['#FFCE56', '#36A2EB', '#FF6384'],
+        backgroundColor: ['#ffa500', '#99ce3e', '#dc3545'],
       },
     ],
   };

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Card, Button, Row, Col, Form } from 'react-bootstrap';
+import {
+  Container,
+  Card,
+  Button,
+  Row,
+  Col,
+  Form,
+  Spinner,
+} from 'react-bootstrap';
 import './ProfilePage.css';
 
 const ConsumerProfilePage = () => {
@@ -74,11 +82,17 @@ const ConsumerProfilePage = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="spinner-container">
+        <Spinner animation="border" role="status" variant="primary">
+          <span className="sr-only"></span>
+        </Spinner>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>{error}</div>;
   }
 
   return (

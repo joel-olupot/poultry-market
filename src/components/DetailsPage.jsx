@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Card, Form, Button, Spinner } from 'react-bootstrap';
 import axios from 'axios';
-import NavBar from './NavBar';
 import './DetailsPage.css';
 import { useAuth } from './AuthContext';
+import HomePage from './HomePage';
 
 const DetailsPage = () => {
   const { id } = useParams();
@@ -27,6 +27,7 @@ const DetailsPage = () => {
             arrayBufferToBase64(image.data.data)
           ),
         };
+        console.log(itemWithImage);
         setItem(itemWithImage);
         setSelectedQuantity(itemWithImage.quantity.min);
       } catch (error) {
@@ -46,6 +47,13 @@ const DetailsPage = () => {
     }
     return `data:image/jpeg;base64,${window.btoa(binary)}`;
   };
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'UGX',
+    minimumFractionDigits: 0, // No decimal places
+    maximumFractionDigits: 0, // No decimal places
+  });
 
   const handleQuantityChange = (event) => {
     setSelectedQuantity(parseInt(event.target.value));
@@ -75,7 +83,7 @@ const DetailsPage = () => {
   }
 
   const addToCart = async () => {
-    if (!userType) {
+    if (userType !== 'consumer') {
       navigate('/login');
     } else {
       try {
@@ -96,12 +104,22 @@ const DetailsPage = () => {
           }
         );
         console.log(response.data);
-        setSuccess(true);
-        setTimeout(() => {
-          setSuccess(false);
-        }, 2000);
+        if (response.data.status === 'unsuccessful') {
+          setError(
+            'Only items from the same farm can be added to the same cart!'
+          );
+          setTimeout(() => {
+            setError(false);
+          }, 3000);
+        }
+        if (!response.data.status) {
+          setSuccess(true);
+          setTimeout(() => {
+            setSuccess(false);
+          }, 2000);
+        }
       } catch (error) {
-        setError(true);
+        setError(error.message);
         setTimeout(() => {
           setError(false);
         }, 2000);
@@ -111,30 +129,43 @@ const DetailsPage = () => {
 
   return (
     <>
-      <NavBar />
-      <Container className="mt-4">
+      <Container className="mt-2 bg-secondary-emphasis border-bold">
+        {error && <div className="alert alert-danger text-center">{error}</div>}
+        {success && (
+          <div className="alert alert-success text-center">
+            Item added to cart successfully!
+          </div>
+        )}
         <Card className="item-card">
-          {error && (
-            <div className="alert alert-danger">Error adding to cart</div>
-          )}
-          {success && (
-            <div className="alert alert-success">
-              Item added to cart successfully!
-            </div>
-          )}
           <Card.Img variant="top" src={item.images[0]} className="item-image" />
           <Card.Body>
             <Card.Text>
-              <strong>{item.name}</strong>
+              <strong className="text-primary fs-5">{item.name}</strong>
               <br />
-              <strong>Farm:</strong> {item.farmName}
+              Farm:{' '}
+              <strong className="text-primary-emphasis">{item.farmName}</strong>
               <br />
-              <strong>Quantity:</strong> {item.quantity.min}-{item.quantity.max}
+              Quantity:{' '}
+              <strong className="text-primary-emphasis">
+                {item.quantity.min} - {item.quantity.max}
+              </strong>
               <br />
-              <strong>Price:</strong> ${item.price.min}-${item.price.max}
+              Unit Price:{' '}
+              <strong className="text-primary-emphasis">
+                {formatter.format(item.price.min / item.quantity.min)}
+              </strong>
               <br />
-              <strong>Description:</strong>
-              <br /> {item.description}
+              Price:{' '}
+              <strong className="text-primary-emphasis">
+                {formatter.format(item.price.min)} -{' '}
+                {formatter.format(item.price.max)}
+              </strong>
+              <br />
+              Description:
+              <br />{' '}
+              <strong className="text-primary-emphasis">
+                {item.description}
+              </strong>
               <br />
             </Card.Text>
             <Form>
@@ -156,7 +187,8 @@ const DetailsPage = () => {
                 </Form.Control>
               </Form.Group>
               <Card.Text>
-                <strong>Total Price:</strong> ${calculatePrice().toFixed(2)}
+                Total Price:{' '}
+                <strong>{formatter.format(calculatePrice().toFixed(2))}</strong>
               </Card.Text>
               <Button variant="primary" onClick={addToCart}>
                 Add to Cart
@@ -165,6 +197,16 @@ const DetailsPage = () => {
           </Card.Body>
         </Card>
       </Container>
+      <br />
+      <div className="text-center fs-1">
+        <strong className="text-light bg-secondary">
+          You may also like the following products.{' '}
+          <strong className="text-primary-emphasis bg-light">
+            Let's explore to find your favorites!
+          </strong>
+        </strong>
+      </div>
+      <HomePage />
     </>
   );
 };

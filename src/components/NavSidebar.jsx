@@ -8,7 +8,7 @@ import { useAuth } from './AuthContext';
 import './NavAndSidebar.css';
 import ConsumerProfilePage from './ConsumerProfilePage';
 import CartPage from './CartPage';
-import OrderHistoryPage from './OrderHistoryPage';
+import OrderHistory from './OrderHistory';
 import ConsumerSideBar from './ConsumerSideBar';
 import ChatPage from './ChatPage';
 
@@ -54,12 +54,12 @@ const NavSidebar = () => {
           <Routes>
             <Route
               path="/"
-              element={<Navigate to="/account/consumer/profile" />}
+              element={<Navigate to="/account/consumer/cart" />}
             />
             <Route path="profile" element={<ConsumerProfilePage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="chat" element={<ChatPage />} />
-            <Route path="history" element={<OrderHistoryPage />} />
+            <Route path="history" element={<OrderHistory />} />
           </Routes>
         </div>
       </div>

@@ -8,8 +8,12 @@ import {
   Col,
   Form,
   Spinner,
+  Image,
 } from 'react-bootstrap';
 import './ProfilePage.css';
+
+import image1 from '../images/ppp.jpeg';
+import image2 from '../images/ppp1.jpeg';
 
 const ProfilePage = () => {
   const [editMode, setEditMode] = useState(false);

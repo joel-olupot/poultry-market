@@ -1,19 +1,40 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
 
 const makeOrder = async (req, res) => {
   try {
-    req.body.madeBy = req.user.userId;
+    const userId = req.user.userId;
+    const { products, deposit, totalCost } = req.body;
 
-    const itemData = {
-      ...req.body,
+    const balance = totalCost - deposit;
+
+    const orderItems = await Promise.all(
+      products.map(async (product) => {
+        const productData = await Product.findById(product.productId);
+        const { name, createdBy } = productData;
+
+        return {
+          ...product,
+          productName: name,
+          farmerId: createdBy,
+        };
+      })
+    );
+
+    const orderData = {
+      madeBy: userId,
+      totalCost,
+      deposit,
+      balance,
+      items: orderItems,
     };
 
-    const item = await Order.create(itemData);
-    res.status(StatusCodes.CREATED).json({ item });
+    const order = await Order.create(orderData);
+    res.status(StatusCodes.CREATED).json({ order });
   } catch (error) {
     console.log(error.message);
     console.error(error);
@@ -21,34 +42,90 @@ const makeOrder = async (req, res) => {
   }
 };
 
-const getAllOrders = async (req, res) => {
-  const orders = await Order.find({});
-  const detailedOrders = await Promise.all(
-    orders.map(async (order) => {
-      const productDetails = await Product.findById(order.productId);
+const getOrders = async (req, res) => {
+  try {
+    // Fetch orders that belong to the farmer
+    const orders = await Order.find({
+      'items.farmerId': req.user.userId,
+    });
 
-      return {
-        ...order._doc,
-        name: productDetails.name,
-        description: productDetails.description,
-        farmName: productDetails.farmName,
-        images: productDetails.images,
-      };
-    })
-  );
-  res
-    .status(StatusCodes.OK)
-    .json({ detailedOrders, count: detailedOrders.length });
+    // Prepare detailed orders with consumer information
+    const detailedOrders = await Promise.all(
+      orders.map(async (order) => {
+        const consumer = await User.findById(order.madeBy);
+
+        return {
+          ...order._doc, // Spread the order document to avoid Mongoose document issues
+          contact: consumer.contact,
+          email: consumer.email,
+          consumerName: consumer.name,
+        };
+      })
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ detailedOrders, count: detailedOrders.length });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
 };
+
+const getOrderHistory = async (req, res) => {
+  try {
+    const orders = await Order.find({ madeBy: req.user.userId });
+
+    const detailedOrders = await Promise.all(
+      orders.map(async (order) => {
+        const detailedItems = await Promise.all(
+          order.items.map(async (item) => {
+            const farmer = await User.findById(item.farmerId);
+            const productDetails = await Product.findById(item.productId);
+
+            return {
+              ...item._doc,
+              farmerName: farmer.name,
+              contact: farmer.contact,
+              description: productDetails.description,
+              farmName: farmer.farmName,
+              images: productDetails.images,
+            };
+          })
+        );
+
+        return {
+          ...order._doc,
+          items: detailedItems,
+        };
+      })
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ detailedOrders, count: detailedOrders.length });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
 const updateOrder = async (req, res) => {
   const {
+    user: { userId },
     params: { id: orderId },
   } = req;
 
-  const order = await Order.findOneAndUpdate({ _id: orderId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const order = await Order.findOneAndUpdate(
+    { _id: orderId, 'items.farmerId': userId },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   if (!order) {
     throw new NotFoundError(`No product with id ${orderId}`);
   }
@@ -57,23 +134,34 @@ const updateOrder = async (req, res) => {
 
 const summary = async (req, res) => {
   try {
-    const today = new Date();
+    const userId = req.user.userId;
+
+    // Get current date and convert to UTC
+    const now = new Date();
+    const today = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    );
     const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+    yesterday.setUTCDate(today.getUTCDate() - 1);
     const last7Days = new Date(today);
-    last7Days.setDate(today.getDate() - 7);
+    last7Days.setUTCDate(today.getUTCDate() - 7);
 
     const ordersToday = await Order.countDocuments({
-      createdAt: { $gte: today.setHours(0, 0, 0, 0) },
+      'items.farmerId': userId,
+      createdAt: { $gte: today },
     });
+
     const ordersYesterday = await Order.countDocuments({
+      'items.farmerId': userId,
       createdAt: {
-        $gte: yesterday.setHours(0, 0, 0, 0),
-        $lt: today.setHours(0, 0, 0, 0),
+        $gte: yesterday,
+        $lt: today,
       },
     });
+
     const ordersLast7Days = await Order.countDocuments({
-      createdAt: { $gte: last7Days.setHours(0, 0, 0, 0) },
+      'items.farmerId': userId,
+      createdAt: { $gte: last7Days },
     });
 
     res.json({ ordersToday, ordersYesterday, ordersLast7Days });
@@ -84,33 +172,48 @@ const summary = async (req, res) => {
 
 const sales = async (req, res) => {
   try {
+    const userId = req.user.userId;
     const today = new Date();
     const last7Days = new Date(today);
     last7Days.setDate(today.getDate() - 6);
 
     const salesData = await Order.aggregate([
+      { $unwind: '$items' },
       {
-        $match: { createdAt: { $gte: last7Days } },
-      },
-      {
-        $group: {
-          _id: { $dayOfWeek: '$createdAt' },
-          totalSales: { $sum: '$price' },
+        $match: {
+          'items.farmerId': mongoose.Types.ObjectId(userId),
+          createdAt: { $gte: last7Days },
         },
       },
       {
-        $sort: { _id: 1 },
+        $group: {
+          _id: {
+            day: { $dayOfYear: '$createdAt' },
+            year: { $year: '$createdAt' },
+          },
+          totalSales: { $sum: '$items.price' },
+        },
+      },
+      {
+        $sort: { '_id.year': 1, '_id.day': 1 },
       },
     ]);
 
+    // Prepare an array to hold the sales data for the last 7 days
     const formattedSalesData = Array(7).fill(0);
+
+    // Map the sales data to the formatted array
     salesData.forEach((sale) => {
-      // Adjust dayIndex to match the days of the week and make today the last column
-      const dayIndex = (sale._id - 2 - today.getDay() + 7) % 7;
-      formattedSalesData[dayIndex] = sale.totalSales;
+      const saleDate = new Date(sale._id.year, 0); // Start of the sale year
+      saleDate.setDate(sale._id.day); // Set the day of the year
+
+      const dayIndex = Math.floor((today - saleDate) / (24 * 60 * 60 * 1000));
+      if (dayIndex >= 0 && dayIndex < 7) {
+        formattedSalesData[6 - dayIndex] = sale.totalSales;
+      }
     });
 
-    console.log('Formatted Sales Data:', formattedSalesData); // Debug log
+    // console.log('Formatted Sales Data:', formattedSalesData); // Debug log
     res.json({ salesData: formattedSalesData });
   } catch (error) {
     console.error('Error fetching sales data:', error);
@@ -118,9 +221,25 @@ const sales = async (req, res) => {
   }
 };
 
+module.exports = sales;
+
 const status = async (req, res) => {
   try {
+    const userId = req.user.userId;
+
+    const rawOrders = await Order.find({ 'items.farmerId': userId });
+
+    if (rawOrders.length === 0) {
+      return res.json({
+        statusData: { pending: 0, completed: 0, rejected: 0 },
+      });
+    }
+
     const orders = await Order.aggregate([
+      { $unwind: '$items' },
+      {
+        $match: { 'items.farmerId': mongoose.Types.ObjectId(userId) },
+      },
       {
         $group: {
           _id: '$status',
@@ -141,14 +260,17 @@ const status = async (req, res) => {
 
     res.json({ statusData });
   } catch (error) {
+    console.error('Error fetching order status data:', error); // Log the error to debug
     res
       .status(500)
       .json({ message: 'Error fetching order status data', error });
   }
 };
+
 module.exports = {
   makeOrder,
-  getAllOrders,
+  getOrders,
+  getOrderHistory,
   updateOrder,
   summary,
   sales,

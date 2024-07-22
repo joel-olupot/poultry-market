@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Button, Card, Row, Col, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import axios from 'axios';
 import './StockPage.css';
 
@@ -84,6 +84,13 @@ const StockPage = () => {
     return `data:image/jpeg;base64,${window.btoa(binary)}`;
   };
 
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'UGX',
+    minimumFractionDigits: 0, // No decimal places
+    maximumFractionDigits: 0, // No decimal places
+  });
+
   if (loading) {
     return (
       <div className="spinner-container">
@@ -99,64 +106,96 @@ const StockPage = () => {
   }
 
   return (
-    <Container fluid className="px-0 pt-1">
-      <h1 className="text-center">Stock Management</h1>
-      <Row className="mt-4">
-        {stockProducts.map((product) => (
-          <Col
-            key={product._id}
-            lg={3}
-            md={4}
-            sm={6}
-            xs={12}
-            className="mb-4 d-flex justify-content-center"
-          >
-            <Card className="product-card">
-              <Card.Img
-                variant="top"
-                src={product.imageUrl}
-                className="product-image"
-              />
-              <Card.Body>
-                <Card.Title>{product.name}</Card.Title>
-                <Card.Text>
-                  Quantity: {product.quantity.min}-{product.quantity.max}
-                </Card.Text>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleRemoveProduct(product._id)}
-                >
-                  Remove
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-        <Col
-          lg={3}
-          md={4}
-          sm={6}
-          xs={12}
-          className="mb-4 d-flex justify-content-center"
-        >
-          <Card className="add-product-card">
-            <Link to="/account/farmer/add-stock" className="card-link">
-              <Card.Body className="d-flex align-items-center justify-content-center">
-                <h1>+</h1>
-              </Card.Body>
-            </Link>
-          </Card>
-        </Col>
-      </Row>
-      {stockProducts.length > 0 && (
-        <div className="clear-stock-button-container">
-          <Button variant="danger" onClick={handleClearStock}>
-            Clear Stock
-          </Button>
+    <div>
+      {stockProducts.length > 0 ? (
+        <Container className="mt-1 pt-1">
+          <h1 className="text-center">Stock Management</h1>
+          <Row className="mt-4">
+            {stockProducts.map((product) => (
+              <Col
+                key={product._id}
+                lg={3}
+                md={4}
+                sm={6}
+                xs={12}
+                className="mb-4 d-flex justify-content-center"
+              >
+                <Card className="product-card">
+                  <Card.Img
+                    variant="top"
+                    src={product.imageUrl}
+                    className="product-image"
+                  />
+                  <Card.Body>
+                    <h5 className="text-primary fs-5">{product.name}</h5>
+                    <Card.Text>
+                      Quantity Range:{' '}
+                      <strong className="text-primary-emphasis">
+                        {product.quantity.min} - {product.quantity.max}
+                      </strong>
+                      <br />
+                      Price Range: <br />
+                      <strong className="text-primary-emphasis">
+                        {formatter.format(product.price.min)} -{' '}
+                        {formatter.format(product.price.max)}
+                      </strong>
+                    </Card.Text>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleRemoveProduct(product._id)}
+                    >
+                      Remove
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+            <Col
+              lg={3}
+              md={4}
+              sm={6}
+              xs={12}
+              className="mb-4 d-flex justify-content-center"
+            >
+              <Card className="add-product-card">
+                <Link to="/account/farmer/add-stock" className="card-link">
+                  <Card.Body className="d-flex align-items-center justify-content-center">
+                    <h1>+</h1>
+                  </Card.Body>
+                </Link>
+              </Card>
+            </Col>
+          </Row>
+          {stockProducts.length > 0 && (
+            <div className="clear-stock-button-container">
+              <Button variant="danger" onClick={handleClearStock}>
+                Clear Stock
+              </Button>
+            </div>
+          )}
+        </Container>
+      ) : (
+        <div className="text-center fs-3 mt-3">
+          <strong className="text-light bg-secondary">
+            You have no stock.{' '}
+            <strong className="text-primary-emphasis bg-light">
+              Add stock to get started!
+            </strong>
+          </strong>
+          <br />
+          <br />
+          <button variant="primary">
+            <NavLink
+              to="/account/farmer/add-stock"
+              className="nav-link text-dark"
+            >
+              Add Stock
+            </NavLink>
+          </button>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

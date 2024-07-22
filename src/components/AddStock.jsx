@@ -157,6 +157,7 @@ const AddStock = () => {
               )}
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="productName" className="mb-3">
+                  Product:
                   <Form.Control
                     type="text"
                     name="productName"
@@ -170,6 +171,7 @@ const AddStock = () => {
                 <Form.Group controlId="quantityRange" className="mb-3">
                   <Row>
                     <Col>
+                      Minimum:
                       <Form.Control
                         type="number"
                         name="quantityMin"
@@ -181,6 +183,7 @@ const AddStock = () => {
                       />
                     </Col>
                     <Col>
+                      Maximum:
                       <Form.Control
                         type="number"
                         name="quantityMax"
@@ -220,6 +223,7 @@ const AddStock = () => {
                   </Row>
                 </Form.Group>
                 <Form.Group controlId="description" className="mb-3">
+                  Description:
                   <Form.Control
                     as="textarea"
                     rows={3}
@@ -232,6 +236,7 @@ const AddStock = () => {
                   />
                 </Form.Group>
                 <Form.Group controlId="images" className="mb-3">
+                  Add Image(s):
                   <Form.Control
                     type="file"
                     accept="image/*"

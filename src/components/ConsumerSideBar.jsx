@@ -20,13 +20,10 @@ const ConsumerSideBar = () => {
       <ListGroup.Item as={NavLink} to="/account/consumer/cart">
         Cart
       </ListGroup.Item>
-      <ListGroup.Item as={NavLink} to="/account/consumer/chat">
-        Chat
-      </ListGroup.Item>
       <ListGroup.Item as={NavLink} to="/account/consumer/history">
         Order History
       </ListGroup.Item>
-      <ListGroup.Item action onClick={handleLogout}>
+      <ListGroup.Item action onClick={handleLogout} className="signout-item">
         Sign Out
       </ListGroup.Item>
     </ListGroup>

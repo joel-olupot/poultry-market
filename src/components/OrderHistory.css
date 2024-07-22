@@ -1,0 +1,55 @@
+.order-history-container {
+  padding: 20px;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.order-card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.order-card-img {
+  width: 100%;
+  height: auto;
+  max-height: 100px; /* Adjust the maximum height of the image */
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: capitalize;
+  font-size: 0.8em; /* Smaller font size */
+  display: inline-block;
+}
+
+.status-badge.pending {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.status-badge.completed {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.status-badge.rejected {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.card-title,
+.card-text {
+  font-size: 0.9em; /* Smaller font size */
+}

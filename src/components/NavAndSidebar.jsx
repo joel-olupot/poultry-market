@@ -17,6 +17,7 @@ const NavAndSidebar = () => {
   const { userType } = useAuth;
   const [showSidebar, setShowSidebar] = useState(false);
   const navigate = useNavigate();
+  const [userId] = useState('currentUserId');
 
   // useEffect(() => {
   //   if (userType !== 'farmer') {
@@ -61,7 +62,7 @@ const NavAndSidebar = () => {
             <Route path="stock" element={<StockPage />} />
             <Route path="order-management" element={<OrderManagementPage />} />
             <Route path="analytics" element={<Analytics />} />
-            <Route path="chat" element={<ChatPage />} />
+            <Route path="chat" element={<ChatPage sender={userId} />} />
             <Route path="add-stock" element={<AddStock />} />
           </Routes>
         </div>
